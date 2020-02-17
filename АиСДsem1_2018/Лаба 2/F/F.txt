@@ -1,0 +1,73 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+public class F {
+    public static void main(String[] args) throws IOException {
+        ArrayList<Integer> stekF = new ArrayList<>();
+        ArrayList<Integer> stekS = new ArrayList<>();
+        ArrayList<String> rul = new ArrayList<>();
+        ArrayList<Integer> res = new ArrayList<>();
+        Scanner input = new Scanner(System.in);
+        int num = input.nextInt();
+        
+        for (int i = 0; i < num; ++i) {
+            stekF.add(0, input.nextInt());
+        }
+        while(true) {
+            int minF = stekF.size() - 1;
+            for (int k = stekF.size() - 2; k > -1; --k) {
+                if (stekF.get(k) < stekF.get(minF)) {
+                    minF = k;
+                }
+            }
+            int minS = stekS.size() - 1;
+            for (int k = stekS.size() - 2; k > -1; --k) {
+                if (stekS.get(k) < stekS.get(minS)) {
+                    minS = k;
+                }
+            }
+            if (minF == -1 && minS == -1) {break;}
+            if (minS == -1) {
+                for (int k = stekF.size() - minF; k > 0; --k) {
+                    stekS.add(stekF.remove(stekF.size() - 1));
+                    rul.add("push");
+                }
+                continue;
+            }
+            if (minF == -1) {
+                for (int k = 0; k < stekS.size(); ++k) {
+                    res.add(stekS.remove(stekS.size() - 1));
+                    rul.add("pop");
+                }
+                continue;
+            }
+            if (stekF.get(minF) < stekS.get(minS)) {
+                for (int k = 0; k < stekF.size() - minF; ++k) {
+                    stekS.add(stekF.remove(stekF.size() - 1));
+                    rul.add("push");
+                }
+                continue;
+            }
+            if (stekF.get(minF) > stekS.get(minS)) {
+                for (int k = 0; k < stekS.size() - minS; ++k) {
+                    res.add(stekS.remove(stekS.size() - 1));
+                    rul.add("pop");
+                }
+            }
+        }
+        int ch = 0;
+        for (int i = 1; i < num; ++i) {
+            if (res.get(i - 1) > res.get(i)) {
+                ch++;
+                break;
+            }                
+        }
+        if (ch == 0) {
+            for (int i = 0; i < rul.size(); ++i) {
+                System.out.print((rul.get(i)) + "\n");
+            }
+        } else {
+            System.out.print("impossible");
+        }
+    }
+}

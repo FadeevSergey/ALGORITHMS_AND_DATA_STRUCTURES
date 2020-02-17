@@ -1,0 +1,98 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+int main()
+{
+    int n;
+    int root;
+    cin >> n;
+    int p[n + 1];
+    p[1] = 0;
+    root = 1;
+    for(int i = 2; i <= n; i++)
+    {
+        cin >> p[i];
+    }
+    int log = log2(n);
+    int dp[n + 1][log + 1];
+    for (int i = 1; i <= n; i++) {
+        dp[i][0] = p[i];
+    }
+    for(int i = 0; i <= log; i++)
+    {
+        dp[0][i] = 0;
+    }
+    for (int j = 1; j <= log; j++) {
+        for (int i = 1; i <= n; i++) {
+            dp[i][j] = dp[dp[i][j - 1]][j - 1];
+        }
+    }
+    int d[n + 1];
+    d[1] = 0;
+    for(int i = 2; i <= n; i++)
+    {
+        d[i] = d[p[i]] + 1;
+    }
+//    for(int i = 1; i <= n; i++)
+//        cout << d[i] << " ";
+    int m;
+    cin >> m;
+    for(int i = 0; i < m; i++)
+    {
+        int first, second;
+        cin >> first >> second;
+        if(d[second] > d[first])
+        {
+            swap(first, second);
+        }
+        int del = d[first] - d[second];
+        //cout << "1\n";
+        while (d[first] != d[second]) {
+            //cout << log2(del) << " " << del <<  "\n";
+            int temp = log2(del);
+            del = del - pow(2, temp);
+            first = dp[first][temp];
+            //cout << d[first] << " " << d[second] << "\n";
+        }
+        if (first == second) {
+            cout << first << '\n';
+            continue;
+        }
+        while (dp[first][0] != dp[second][0]) {
+            int tempMax = -1;
+            //cout << "*\n";
+            for (int j = 0; j <= log; j++) {
+                if (dp[first][j] != dp[second][j]) {
+                    tempMax = j;
+                }
+            }
+            first = dp[first][tempMax];
+            second = dp[second][tempMax];
+        }
+        cout << dp[first][0] << "\n";
+    }
+//    for(int i = 1; i <= n; i++)
+//    {
+//        cout << i << ':' << " ";
+//        if(i != root)
+//        {
+//            for (int j = 0; j <= log; j++)
+//            {
+//                if(dp[i][j] == 0)
+//                {
+//                    break;
+//                }
+//                if(dp[i][j] == root)
+//                {
+//                    cout << dp[i][j] << " ";
+//                    break;
+//                }
+//                cout << dp[i][j] << " ";
+//            }
+//        }
+//        cout << "\n";
+//    }
+}
+close

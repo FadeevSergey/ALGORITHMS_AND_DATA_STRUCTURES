@@ -1,0 +1,128 @@
+//Fadeev Sergey. 2019
+//Задача D. НФХ
+//https://neerc.ifmo.ru/~sta/2018-2019/1-discrete-math/04-lab-cf-grammar.pdf
+
+//http://neerc.ifmo.ru/wiki/index.php?title=%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%9A%D0%BE%D0%BA%D0%B0-%D0%AF
+//%D0%BD%D0%B3%D0%B5%D1%80%D0%B0-%D0%9A%D0%B0%D1%81%D0%B0%D0%BC%D0%B8_%D1%80%D0%B0%D0%B7%D0%B1%D0%BE%D1%80%D0%B0_%D0%B3%D1%80
+//%D0%B0%D0%BC%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B8_%D0%B2_%D0%9D%D0%A4%D0%A5 //algo
+
+import java.io.*;
+import java.util.*;
+
+public class E {
+    public static void main(String[] args) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader
+                (new FileInputStream("minonpath.in"), "UTF-8"))) {
+            int n;
+            n = Integer.parseInt(reader.readLine());
+            int log = (int)(Math.log10(n) / Math.log10(2));
+            int[][] dpPrise = new int[n + 1][log + 1];
+            int[][] dp = new int[n + 1][log + 1];
+            int[] p = new int[n + 1];
+            int[] d = new int[n + 1];
+            String[] tempStr;
+            for (int i = 2; i <= n; i++) {
+                tempStr = reader.readLine().split(" ");
+                p[i] = Integer.parseInt(tempStr[0]);
+                dpPrise[i][0] = Integer.parseInt(tempStr[1]);
+            }
+            ////////////////////////////////////////////////
+            for (int i = 1; i <= n; i++) {
+                dp[i][0] = p[i];
+            }
+            for (int j = 1; j <= log; j++) {
+                for (int i = 1; i <= n; i++) {
+                    dp[i][j] = dp[dp[i][j - 1]][j - 1];
+                }
+            }
+            ////////////////////////////////////////////////
+            for (int i = 2; i <= n; i++) {
+                d[i] = d[p[i]] + 1;
+            }
+
+            for (int i = 1; i <= log; i++)
+            {
+                for(int j = 1; j <= n; j++)
+                {
+                    dpPrise[j][i] = Math.min(dpPrise[j][i - 1], dpPrise[dp[j][i - 1]][i - 1]);
+                }
+            }
+            PrintWriter out = new PrintWriter("minonpath.out", "UTF-8");
+            int m = Integer.parseInt(reader.readLine());
+            int mFirst, mSecond, mThird;
+            int lca = 0;
+            for(int i = 0; i < m; i++) {
+                int first, second;
+                tempStr = reader.readLine().split(" ");
+                first = Integer.parseInt(tempStr[0]);
+                second = Integer.parseInt(tempStr[1]);
+                if (d[second] > d[first]) {
+                    int temp = first;
+                    first = second;
+                    second = temp;
+                }
+                mFirst = first;
+                mThird = second;
+                int del = d[first] - d[second];
+                while (d[first] != d[second]) {
+                    int temp = (int)(Math.log(del) / Math.log(2));
+                    del = del - (int)Math.pow(2, temp);
+                    first = dp[first][temp];
+                }
+                mSecond = first;
+                boolean fl = true;
+                if (first == second) {
+                    lca = first;
+                    fl = false;
+                }
+                if(fl) {
+                    while (dp[first][0] != dp[second][0]) {
+                        int tempMax = -1;
+                        for (int j = 0; j < log; j++) {
+                            if (dp[first][j] != dp[second][j]) {
+                                tempMax = j;
+                            }
+                        }
+                        first = dp[first][tempMax];
+                        second = dp[second][tempMax];
+                    }
+                    lca = dp[first][0];
+                }
+                int tempMin = 1000009;
+                if(mFirst!= lca) {
+                    del = d[mFirst] - d[lca];
+                    while (del != 0) {
+                        int temp = (int)(Math.log(del) / Math.log(2));
+                        tempMin = Math.min(dpPrise[mFirst][temp], tempMin);
+                        mFirst = dp[mFirst][temp];
+                        del = del - (int)Math.pow(2, temp);
+                    }
+                }
+
+                if(mThird!= lca) {
+                    del = d[mThird] - d[lca];
+                    while (del != 0) {
+                        int x; //
+                        int temp = (int)(Math.log(del) / Math.log(2));
+                        tempMin = Math.min(dpPrise[mThird][temp], tempMin);
+                        mThird = dp[mThird][temp];
+                        del = del - (int)Math.pow(2, temp);
+                    }
+                }
+
+//        if(mSecond!= lca) {
+//            del = d[mSecond] - d[lca];
+//            while (del != 0) {
+//                int temp = log2(del);
+//                tempMin = min(dpPrise[mSecond][temp], tempMin);
+//                mSecond = dp[mSecond][temp];
+//                del = del - pow(2, temp);
+//            }
+//        }
+                out.println(tempMin);
+            }
+            out.close();
+        }
+    }
+}
+close

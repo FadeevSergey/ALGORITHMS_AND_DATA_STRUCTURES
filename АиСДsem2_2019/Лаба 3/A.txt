@@ -1,0 +1,64 @@
+#include <iostream>
+#include <cmath>
+#include <set>
+
+using namespace std;
+
+int main()
+{
+    int n;
+    int root;
+    cin >> n;
+    int p[n + 1];
+    for(int i = 1; i <= n; i++)
+    {
+        cin >> p[i];
+        if(p[i] == 0)
+        {
+            root = i;
+        }
+    }
+    int log = log2(n);
+    int dp[n + 1][log + 1];
+    for (int i = 1; i <= n; i++) {
+        dp[i][0] = p[i];
+    }
+    for(int i = 0; i <= log; i++)
+    {
+        dp[0][i] = 0;
+    }
+    for (int j = 1; j <= log; j++) {
+        for (int i = 1; i <= n; i++) {
+            dp[i][j] = dp[dp[i][j - 1]][j - 1];
+        }
+    }
+//    for(int i = 1; i <= n; i++)
+//    {
+//        for(int j = 0; j < log; j++)
+//        {
+//            cout << dp[i][j] << " ";
+//        }
+//        cout << "\n";
+//    }
+    for(int i = 1; i <= n; i++)
+    {
+        cout << i << ':' << " ";
+        if(i != root)
+        {
+            for (int j = 0; j <= log; j++)
+            {
+                if(dp[i][j] == 0)
+                {
+                    break;
+                }
+                if(dp[i][j] == root)
+                {
+                    cout << dp[i][j] << " ";
+                    break;
+                }
+                cout << dp[i][j] << " ";
+            }
+        }
+        cout << "\n";
+    }
+}
